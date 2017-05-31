@@ -35,10 +35,6 @@ public abstract class LocateService extends Service
         Logger.setDebug(true);
         Logger.i("Started service");
 
-        if (intent == null) {
-            Logger.i("intent is null");
-        }
-
         int providerType = LocatePreferences.getProvider(getApplicationContext());
 
         // Create location request
