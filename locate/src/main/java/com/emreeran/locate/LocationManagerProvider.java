@@ -8,23 +8,40 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Emre Eran on 30/05/2017.
  */
 
-class LocationManagerProvider {
+class LocationManagerProvider extends Provider {
 
     private LocationManager mLocationManager;
+    private OnLocationChangedListener mOnLocationChangedListener;
 
     LocationManagerProvider(Context context) {
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+    }
 
-        Settings settings = Locate.getInstance().getSettings();
-        if (settings.isRunAsService()) {
-            startAsService(context, settings);
+    @Override
+    void requestLocationUpdates(@NonNull Context context, @NonNull Settings settings, OnLocationChangedListener listener) {
+        mOnLocationChangedListener = listener;
+        startWithListener(context, settings);
+    }
+
+    @Override
+    void startService(Context context, Settings settings, Class<? extends LocateService> serviceClass) {
+        if (PermissionValidator.checkLocationPermissions(context)) {
+            Logger.i("Starting as service");
+            // Save settings
+            LocatePreferences.saveSettings(context, settings);
+            LocatePreferences.setProvider(context, LocatePreferences.PROVIDER_LOCATION_MANAGER);
+            // Start service
+            context.startService(new Intent(context, serviceClass));
         } else {
-            startWithListener(context, settings);
+            Logger.i("Permissions are missing.");
+            // Permissions are missing somehow, fail with permissions missing.
+            // TODO: fail with requiring permissions
         }
     }
 
@@ -42,8 +59,9 @@ class LocationManagerProvider {
             mLocationManager.requestLocationUpdates(minTime, minDistance, criteria, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    // TODO: Return location
-                    Logger.i("Location updated; long:" + location.getLongitude() + " lat: " + location.getLatitude());
+                    if (mOnLocationChangedListener != null) {
+                        mOnLocationChangedListener.onLocationChanged(location);
+                    }
                 }
 
                 @Override
@@ -61,23 +79,6 @@ class LocationManagerProvider {
                     Logger.i("Provider " + provider + " is disabled");
                 }
             }, Looper.getMainLooper());
-        } else {
-            Logger.i("Permissions are missing.");
-            // Permissions are missing somehow, fail with permissions missing.
-            // TODO: fail with requiring permissions
-        }
-    }
-
-    // Permissions are checked in PermissionValidator
-    @SuppressWarnings("MissingPermission")
-    private void startAsService(Context context, Settings settings) {
-        Logger.i("Starting LocationManagerProvider as service");
-        if (PermissionValidator.checkLocationPermissions(context)) {
-            Logger.i("Starting as service");
-            // Save settings
-            LocatePreferences.saveSettings(context, settings);
-            // Start service
-            context.startService(new Intent(context, LocationManagerService.class));
         } else {
             Logger.i("Permissions are missing.");
             // Permissions are missing somehow, fail with permissions missing.

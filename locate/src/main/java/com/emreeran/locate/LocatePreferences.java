@@ -10,6 +10,10 @@ import com.google.android.gms.location.LocationRequest;
  */
 
 class LocatePreferences {
+
+    static final int PROVIDER_FUSE = 0;
+    static final int PROVIDER_LOCATION_MANAGER = 1;
+
     private static final String PREFS_NAME = "locatePreferences";
     private static final String KEY_IS_SAVED = "isSaved";
     private static final String KEY_PRIORITY = "priority";
@@ -20,6 +24,17 @@ class LocatePreferences {
     private static final String KEY_MAX_WAIT_TIME = "maxWaitTime";
     private static final String KEY_SMALLEST_DISPLACEMENT = "smallestDisplacement";
     private static final String KEY_NUMBER_OF_UPDATES = "numberOfUpdates";
+    private static final String KEY_PROVIDER = "provider";
+
+    static void setProvider(Context context, int provider) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putInt(KEY_PROVIDER, provider).apply();
+    }
+
+    static int getProvider(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getInt(KEY_PROVIDER, PROVIDER_LOCATION_MANAGER);
+    }
 
     static void saveSettings(Context context, Settings settings) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);

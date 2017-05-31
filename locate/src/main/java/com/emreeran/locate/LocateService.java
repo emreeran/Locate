@@ -18,7 +18,7 @@ import com.google.android.gms.location.LocationServices;
  * Created by Emre Eran on 31/05/2017.
  */
 
-public class FuseService extends Service
+public abstract class LocateService extends Service
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleApiClient mGoogleApiClient;
@@ -39,19 +39,31 @@ public class FuseService extends Service
             Logger.i("intent is null");
         }
 
+        int providerType = LocatePreferences.getProvider(getApplicationContext());
+
         // Create location request
         Settings settings = LocatePreferences.getSavedSettings(getApplicationContext());
         if (settings != null) {
-            mLocationRequest = settings.createGooglePlayLocationRequest();
+            if (providerType == LocatePreferences.PROVIDER_FUSE) {
+                // Using Fuse provider
+                mLocationRequest = settings.createGooglePlayLocationRequest();
 
-            // Get GoogleApiClient instance.
-            mGoogleApiClient = new GoogleApiClient.Builder(getApplicationContext())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
+                // Get GoogleApiClient instance.
+                mGoogleApiClient = new GoogleApiClient.Builder(getApplicationContext())
+                        .addConnectionCallbacks(this)
+                        .addOnConnectionFailedListener(this)
+                        .addApi(LocationServices.API)
+                        .build();
 
-            connect();
+                connect();
+            } else if (providerType == LocatePreferences.PROVIDER_LOCATION_MANAGER) {
+                // Using LocationManager provider
+                // TODO: implement
+            } else {
+                // Provider type is not set
+                stopSelf();
+            }
+
         } else {
             // Settings are not available, stop self.
             stopSelf();
@@ -95,8 +107,7 @@ public class FuseService extends Service
 
     @Override
     public void onLocationChanged(Location location) {
-        // TODO: Return location
-        Logger.i("Location updated; long:" + location.getLongitude() + " lat: " + location.getLatitude());
+        // Implement this
     }
 
     // Permissions are checked in PermissionValidator

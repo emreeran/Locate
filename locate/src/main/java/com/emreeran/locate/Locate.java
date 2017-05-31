@@ -23,6 +23,14 @@ public class Locate {
 
     private Settings mSettings;
 
+    private Provider mProvider;
+
+    private boolean mShouldStart = false, mShouldStartService = false;
+
+    private OnLocationChangedListener mOnLocationChangedListener;
+
+    private Class<? extends LocateService> mServiceClass;
+
     private Locate() {
     }
 
@@ -46,6 +54,24 @@ public class Locate {
     public void initialize(Fragment fragment, Settings settings) {
         mSettings = settings;
         handlePermissions(fragment, settings.isShouldAskPermissions());
+    }
+
+    public void requestLocationUpdates(Context context, OnLocationChangedListener onLocationChangedListener) {
+        if (mProvider != null) {
+            mProvider.requestLocationUpdates(context, mSettings, onLocationChangedListener);
+        } else {
+            mShouldStart = true;
+            mOnLocationChangedListener = onLocationChangedListener;
+        }
+    }
+
+    public void startService(Context context, Class<? extends LocateService> serviceClass) {
+        if (mProvider != null) {
+            mProvider.startService(context, mSettings, serviceClass);
+        } else {
+            mShouldStartService = true;
+            mServiceClass = serviceClass;
+        }
     }
 
     /**
@@ -90,6 +116,13 @@ public class Locate {
         }
     }
 
+    public OnLocationChangedListener getOnLocationChangedListener() {
+        return mOnLocationChangedListener;
+    }
+
+    public void setOnLocationChangedListener(OnLocationChangedListener onLocationChangedListener) {
+        mOnLocationChangedListener = onLocationChangedListener;
+    }
     // Package private methods
 
     Settings getSettings() {
@@ -198,12 +231,24 @@ public class Locate {
     private void continueWithFuseProvider(Context context) {
         // Create FuseProvider
         Logger.i("Creating Fuse Provider");
-        FuseProvider provider = new FuseProvider(context);
+        mProvider = new FuseProvider(context);
+
+        if (mShouldStart) {
+            mProvider.requestLocationUpdates(context, mSettings, mOnLocationChangedListener);
+        } else if (mShouldStartService) {
+            mProvider.startService(context, mSettings, mServiceClass);
+        }
     }
 
     private void continueWithLocationManager(Context context) {
         // Create LocationManagerProvider
         Logger.i("Creating LocationManager Provider");
-        LocationManagerProvider provider = new LocationManagerProvider(context);
+        mProvider = new LocationManagerProvider(context);
+
+        if (mShouldStart) {
+            mProvider.requestLocationUpdates(context, mSettings, mOnLocationChangedListener);
+        } else if (mShouldStartService) {
+            mProvider.startService(context, mSettings, mServiceClass);
+        }
     }
 }

@@ -73,10 +73,6 @@ public class Settings {
         mNumberOfUpdates = builder.mNumberOfUpdates;
 
         // General settings
-        Boolean runAsService = builder.mRunAsService;
-        if (runAsService != null ){
-            mRunAsService = runAsService;
-        }
     }
 
     // Package private methods
@@ -187,10 +183,6 @@ public class Settings {
         mCanUseGps = canUseGps;
     }
 
-    boolean isRunAsService() {
-        return mRunAsService;
-    }
-
     boolean isShouldAskPermissions() {
         return mShouldAskPermissions;
     }
@@ -216,7 +208,6 @@ public class Settings {
         private Long mMaxWaitTime;
         private Integer mNumberOfUpdates;
         private Float mSmallestDisplacement;
-        private Boolean mRunAsService;
 
         public Settings build() {
             return new Settings(this);
@@ -271,11 +262,6 @@ public class Settings {
             if (smallestDisplacement >= 0) {
                 mSmallestDisplacement = smallestDisplacement;
             }
-            return this;
-        }
-
-        public Builder runAsService(boolean runAsService) {
-            mRunAsService = runAsService;
             return this;
         }
     }

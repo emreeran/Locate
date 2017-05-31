@@ -1,10 +1,14 @@
 package com.emreeran.sample;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.emreeran.locate.Locate;
+import com.emreeran.locate.OnLocationChangedListener;
 import com.emreeran.locate.Settings;
 
 public class MainActivity extends Activity {
@@ -21,8 +25,16 @@ public class MainActivity extends Activity {
                         .interval(10000)
                         .smallestDisplacement(0)
                         .priority(Settings.Priority.HIGH)
-                        .runAsService(true)
                         .build());
+//        locate.requestLocationUpdates(this, new OnLocationChangedListener() {
+//            @Override
+//            public void onLocationChanged(Location location) {
+//                Log.d("MainActivity", "lat: " + location.getLatitude() + " long: " + location.getLongitude());
+//            }
+//        });
+
+//        locate.startService(this, SampleService.class);
+        stopService(new Intent(this, SampleService.class));
     }
 
     @Override

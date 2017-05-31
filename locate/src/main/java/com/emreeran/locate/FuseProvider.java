@@ -17,12 +17,14 @@ import com.google.android.gms.location.LocationServices;
  * Created by Emre Eran on 30/05/2017.
  */
 
-class FuseProvider implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+class FuseProvider extends Provider implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     /**
      * GoogleApiClient instance to use FusedLocationApi
      */
     private GoogleApiClient mGoogleApiClient;
+    private Settings mSettings;
+    private OnLocationChangedListener mOnLocationChangedListener;
 
     FuseProvider(Context context) {
         // Get GoogleApiClient instance.
@@ -31,14 +33,27 @@ class FuseProvider implements GoogleApiClient.ConnectionCallbacks, GoogleApiClie
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+    }
 
-        Settings settings = Locate.getInstance().getSettings();
-        if (settings.isRunAsService()) {
-            // Run as background service
-            startAsBackgroundService(context, settings);
+    @Override
+    void requestLocationUpdates(@NonNull Context context, @NonNull Settings settings, OnLocationChangedListener listener) {
+        mOnLocationChangedListener = listener;
+        mSettings = settings;
+        connect();
+    }
+
+    @Override
+    void startService(Context context, Settings settings, Class<? extends LocateService> serviceClass) {
+        if (PermissionValidator.checkLocationPermissions(context)) {
+            Logger.i("Starting as service");
+            // Save settings
+            LocatePreferences.saveSettings(context, settings);
+            LocatePreferences.setProvider(context, LocatePreferences.PROVIDER_FUSE);
+            // Start service
+            context.startService(new Intent(context, serviceClass));
         } else {
-            // Connect to GoogleApiClient.
-            connect();
+            // Permissions are missing somehow, fail with permissions missing.
+            // TODO: fail with requiring permissions
         }
     }
 
@@ -47,8 +62,7 @@ class FuseProvider implements GoogleApiClient.ConnectionCallbacks, GoogleApiClie
         Logger.i("Connected to Google Api Client");
 
         // Client is connected, continue with setting up location updates.
-        Settings settings = Locate.getInstance().getSettings();
-        startWithListener(settings);
+        startWithListener(mSettings);
     }
 
     @Override
@@ -65,15 +79,16 @@ class FuseProvider implements GoogleApiClient.ConnectionCallbacks, GoogleApiClie
             Locate.getInstance().resolveGooglePlayServicesConnectionIssue(
                     mGoogleApiClient.getContext(),
                     connectionResult.getErrorCode(),
-                    Locate.getInstance().getSettings().isShouldDisplayDialogIfGooglePlayErrorIsResolvable()
+                    mSettings.isShouldDisplayDialogIfGooglePlayErrorIsResolvable()
             );
         }
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        // TODO: Return location
-        Logger.i("Location updated; long:" + location.getLongitude() + " lat: " + location.getLatitude());
+        if (mOnLocationChangedListener != null) {
+            mOnLocationChangedListener.onLocationChanged(location);
+        }
     }
 
     private void connect() {
@@ -85,21 +100,6 @@ class FuseProvider implements GoogleApiClient.ConnectionCallbacks, GoogleApiClie
                 // Connect to api if not connected.
                 mGoogleApiClient.connect();
             }
-        }
-    }
-
-    // Permissions are checked in PermissionValidator
-    @SuppressWarnings("MissingPermission")
-    private void startAsBackgroundService(Context context, Settings settings) {
-        if (PermissionValidator.checkLocationPermissions(context)) {
-            Logger.i("Starting as service");
-            // Save settings
-            LocatePreferences.saveSettings(context, settings);
-            // Start service
-            context.startService(new Intent(context, FuseService.class));
-        } else {
-            // Permissions are missing somehow, fail with permissions missing.
-            // TODO: fail with requiring permissions
         }
     }
 
