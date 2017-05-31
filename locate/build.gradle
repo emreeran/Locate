@@ -28,3 +28,33 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:10.2.6'
     testCompile 'junit:junit:4.12'
 }
+
+Properties bintrayProperties = new Properties()
+bintrayProperties.load(project.rootProject.file('bintray.properties').newDataInputStream())
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'Locate'
+
+    publishedGroupId = 'com.emreeran.locate'
+    libraryName = 'Locate'
+    artifact = 'locate'
+
+    libraryDescription = 'Android location tracking library'
+
+    siteUrl = 'https://github.com/emreeran/Locate'
+    gitUrl = 'https://github.com/emreeran/Locate.git'
+
+    libraryVersion = '0.0.1'
+
+    developerId = bintrayProperties.getProperty("bintray.developerId")
+    developerName = bintrayProperties.getProperty("bintray.developerName")
+    developerEmail = bintrayProperties.getProperty("bintray.developerEmail")
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
