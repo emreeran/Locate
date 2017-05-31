@@ -12,7 +12,6 @@ import com.emreeran.locate.LocateService;
 public class SampleService extends LocateService {
     @Override
     public void onLocationChanged(Location location) {
-        super.onLocationChanged(location);
         Log.d("SampleService", "lat: " + location.getLatitude() + " long: " + location.getLongitude());
     }
 }

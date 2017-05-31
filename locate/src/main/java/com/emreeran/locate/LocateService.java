@@ -24,6 +24,9 @@ public abstract class LocateService extends Service
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
+    @Override
+    public abstract void onLocationChanged(Location location);
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -99,11 +102,6 @@ public abstract class LocateService extends Service
                     Locate.getInstance().getSettings().isShouldDisplayDialogIfGooglePlayErrorIsResolvable()
             );
         }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        // Implement this
     }
 
     // Permissions are checked in PermissionValidator
