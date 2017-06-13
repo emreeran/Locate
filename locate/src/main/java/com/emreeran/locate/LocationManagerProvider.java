@@ -45,6 +45,11 @@ class LocationManagerProvider extends Provider {
         }
     }
 
+    @Override
+    Location getLastLocation() {
+        return mLastLocation;
+    }
+
     // TODO: implement GPS only, revise
     // Permissions are checked in PermissionValidator
     @SuppressWarnings("MissingPermission")
@@ -59,6 +64,7 @@ class LocationManagerProvider extends Provider {
             mLocationManager.requestLocationUpdates(minTime, minDistance, criteria, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
+                    mLastLocation = location;
                     if (mOnLocationChangedListener != null) {
                         mOnLocationChangedListener.onLocationChanged(location);
                     }

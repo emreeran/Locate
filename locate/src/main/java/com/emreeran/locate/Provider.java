@@ -1,6 +1,7 @@
 package com.emreeran.locate;
 
 import android.content.Context;
+import android.location.Location;
 import android.support.annotation.NonNull;
 
 /**
@@ -10,4 +11,5 @@ import android.support.annotation.NonNull;
 abstract class Provider {
     abstract void requestLocationUpdates(@NonNull Context context, @NonNull Settings settings, OnLocationChangedListener listener);
     abstract void startService(Context context, Settings settings, Class<? extends LocateService> serviceClass);
+    abstract Location getLastLocation();
 }

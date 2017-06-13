@@ -25,6 +25,7 @@ class FuseProvider extends Provider implements GoogleApiClient.ConnectionCallbac
     private GoogleApiClient mGoogleApiClient;
     private Settings mSettings;
     private OnLocationChangedListener mOnLocationChangedListener;
+    private Location mLastLocation;
 
     FuseProvider(Context context) {
         // Get GoogleApiClient instance.
@@ -40,6 +41,11 @@ class FuseProvider extends Provider implements GoogleApiClient.ConnectionCallbac
         mOnLocationChangedListener = listener;
         mSettings = settings;
         connect();
+    }
+
+    @Override
+    Location getLastLocation() {
+        return mLastLocation;
     }
 
     @Override
@@ -86,6 +92,7 @@ class FuseProvider extends Provider implements GoogleApiClient.ConnectionCallbac
 
     @Override
     public void onLocationChanged(Location location) {
+        mLastLocation = location;
         if (mOnLocationChangedListener != null) {
             mOnLocationChangedListener.onLocationChanged(location);
         }

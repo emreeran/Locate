@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
@@ -114,6 +115,13 @@ public class Locate {
                 // TODO: fail with permissions denied
             }
         }
+    }
+
+    public Location getLastLocation() {
+        if (mProvider != null) {
+            return mProvider.getLastLocation();
+        }
+        return null;
     }
 
     public OnLocationChangedListener getOnLocationChangedListener() {
