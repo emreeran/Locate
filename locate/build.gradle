@@ -45,7 +45,7 @@ ext {
     siteUrl = 'https://github.com/emreeran/Locate'
     gitUrl = 'https://github.com/emreeran/Locate.git'
 
-    libraryVersion = '0.0.1'
+    libraryVersion = '0.0.2'
 
     developerId = bintrayProperties.getProperty("bintray.developerId")
     developerName = bintrayProperties.getProperty("bintray.developerName")
