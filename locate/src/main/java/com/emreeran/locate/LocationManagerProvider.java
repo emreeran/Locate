@@ -18,6 +18,7 @@ class LocationManagerProvider extends Provider {
 
     private LocationManager mLocationManager;
     private OnLocationChangedListener mOnLocationChangedListener;
+    private Location mLastLocation;
 
     LocationManagerProvider(Context context) {
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
