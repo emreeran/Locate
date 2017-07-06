@@ -29,11 +29,6 @@ public class Settings {
      */
     private boolean mCanUseGps;
 
-    /**
-     * Run as a background service, defaults to false.
-     */
-    private boolean mRunAsService = false;
-
     // FusedApi settings
     private Priority mPriority;
     private Long mInterval;
@@ -71,6 +66,7 @@ public class Settings {
         mFastestInterval = builder.mFastestInterval;
         mMaxWaitTime = builder.mMaxWaitTime;
         mNumberOfUpdates = builder.mNumberOfUpdates;
+        mShouldAskPermissions = builder.mShouldAskPermissions;
 
         // General settings
     }
@@ -208,6 +204,7 @@ public class Settings {
         private Long mMaxWaitTime;
         private Integer mNumberOfUpdates;
         private Float mSmallestDisplacement;
+        private boolean mShouldAskPermissions = true;
 
         public Settings build() {
             return new Settings(this);
@@ -262,6 +259,11 @@ public class Settings {
             if (smallestDisplacement >= 0) {
                 mSmallestDisplacement = smallestDisplacement;
             }
+            return this;
+        }
+
+        public Builder shouldAskPermissions(boolean shouldAskPermissions) {
+            mShouldAskPermissions = shouldAskPermissions;
             return this;
         }
     }
