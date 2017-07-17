@@ -57,6 +57,14 @@ public class Locate {
         handlePermissions(fragment, settings.isShouldAskPermissions());
     }
 
+    public void requestLocationUpdates(Context context) {
+        if (mProvider != null) {
+            mProvider.requestLocationUpdates(context, mSettings, null);
+        } else {
+            mShouldStart = true;
+        }
+    }
+
     public void requestLocationUpdates(Context context, OnLocationChangedListener onLocationChangedListener) {
         if (mProvider != null) {
             mProvider.requestLocationUpdates(context, mSettings, onLocationChangedListener);
