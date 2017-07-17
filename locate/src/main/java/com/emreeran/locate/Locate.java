@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -81,6 +82,18 @@ public class Locate {
             mShouldStartService = true;
             mServiceClass = serviceClass;
         }
+    }
+
+    public void stopService(Context context, Class<? extends LocateService> serviceClass) {
+        context.stopService(new Intent(context, serviceClass));
+    }
+
+    public void stopLocationUpdates() {
+        if (mProvider != null) {
+            mProvider.stopLocationUpdates();
+        }
+
+        mShouldStart = false;
     }
 
     /**
