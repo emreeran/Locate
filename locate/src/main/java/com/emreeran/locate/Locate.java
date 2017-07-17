@@ -19,23 +19,58 @@ import com.google.android.gms.common.ConnectionResult;
 
 public class Locate {
 
+    /**
+     * Google play services is error resolve dialog request code
+     */
     private static final int REQUEST_GOOGLE_PLAY_SERVICES_RESOLVE = 10023;
 
+    /**
+     * Locate instance
+     */
     private static Locate mInstance;
 
+    /**
+     * Locate settings {@link Settings}
+     */
     private Settings mSettings;
 
+    /**
+     * Location provider
+     */
     private Provider mProvider;
 
-    private boolean mShouldStart = false, mShouldStartService = false;
+    /**
+     * Boolean flag set to true when location tracking will start immediately after provider is set.
+     */
+    private boolean mShouldStart = false;
 
+    /**
+     * Boolean flag set to true when location tracking service will start immediately after provider is set.
+     */
+    private boolean mShouldStartService = false;
+
+    /**
+     * On location updated listener
+     */
     private OnLocationChangedListener mOnLocationChangedListener;
 
+    /**
+     * Service class to listen to location updates extending {@link LocateService}
+     */
     private Class<? extends LocateService> mServiceClass;
 
+    /**
+     * Private constructor
+     */
     private Locate() {
     }
 
+    /**
+     * Get Locate instance
+     *
+     * @return {@link Locate} instance
+     */
+    @SuppressWarnings("unused") // Public API
     public static Locate getInstance() {
         if (mInstance == null) {
             mInstance = new Locate();
@@ -44,20 +79,54 @@ public class Locate {
         return mInstance;
     }
 
+    /**
+     * Enable debug mode, logs actions taken.
+     *
+     * @param isEnabled Boolean value to determine if debug is enabled or not
+     */
+    @SuppressWarnings("unused") // Public API
     public void enableDebug(boolean isEnabled) {
         Logger.setDebug(isEnabled);
     }
 
+    /**
+     * Initialize Locate with an {@link Activity} and {@link Settings};
+     * If {@link Settings#mShouldAskPermissions} is not set to false requests permissions
+     * with request code {@link PermissionValidator#REQUEST_LOCATION_PERMISSION}.
+     * To handle permission changes call {@link Locate#onRequestPermissionsResult} in {@link Activity#onRequestPermissionsResult}
+     *
+     * @param activity Current {@link Activity}
+     * @param settings Locate {@link Settings}
+     */
+    @SuppressWarnings("unused") // Public API
     public void initialize(Activity activity, Settings settings) {
         mSettings = settings;
         handlePermissions(activity, settings.isShouldAskPermissions());
     }
 
+    /**
+     * Initialize Locate with an {@link Fragment} and {@link Settings}
+     * If {@link Settings#mShouldAskPermissions} is not set to false requests permissions
+     * with request code {@link PermissionValidator#REQUEST_LOCATION_PERMISSION}.
+     * To handle permission changes call {@link Locate#onRequestPermissionsResult} in {@link Fragment#onRequestPermissionsResult}
+     *
+     * @param fragment Current {@link Fragment}
+     * @param settings Locate {@link Settings}
+     */
+    @SuppressWarnings("unused") // Public API
     public void initialize(Fragment fragment, Settings settings) {
         mSettings = settings;
         handlePermissions(fragment, settings.isShouldAskPermissions());
     }
 
+    /**
+     * Request location updates from provider;
+     * Starts requesting if provider is set, otherwise sets {@link #mShouldStart} flag to true to start requesting after provider is
+     * connected.
+     *
+     * @param context Current context
+     */
+    @SuppressWarnings("unused") // Public API
     public void requestLocationUpdates(Context context) {
         if (mProvider != null) {
             mProvider.requestLocationUpdates(context, mSettings, null);
@@ -66,6 +135,15 @@ public class Locate {
         }
     }
 
+    /**
+     * Request location updates from provider;
+     * Starts requesting if provider is set, otherwise sets {@link #mShouldStart} flag to true to start requesting
+     * after provider is connected.
+     *
+     * @param context                   Current context
+     * @param onLocationChangedListener Listener to call when an update occures
+     */
+    @SuppressWarnings("unused") // Public API
     public void requestLocationUpdates(Context context, OnLocationChangedListener onLocationChangedListener) {
         if (mProvider != null) {
             mProvider.requestLocationUpdates(context, mSettings, onLocationChangedListener);
@@ -75,6 +153,15 @@ public class Locate {
         }
     }
 
+    /**
+     * Starts location service with current provider;
+     * Starts service if provider is set, otherwise sets {@link #mShouldStartService} flag to true to start service
+     * after provider is connected.
+     *
+     * @param context      Current context
+     * @param serviceClass Service class extending LocateService to start
+     */
+    @SuppressWarnings("unused") // Public API
     public void startService(Context context, Class<? extends LocateService> serviceClass) {
         if (mProvider != null) {
             mProvider.startService(context, mSettings, serviceClass);
@@ -84,16 +171,25 @@ public class Locate {
         }
     }
 
+    /**
+     * Stop currently running location service
+     *
+     * @param context      Current context
+     * @param serviceClass Service Class to stop
+     */
+    @SuppressWarnings("unused") // Public API
     public void stopService(Context context, Class<? extends LocateService> serviceClass) {
         context.stopService(new Intent(context, serviceClass));
     }
 
+    /**
+     * Stop provider location updates
+     */
+    @SuppressWarnings("unused") // Public API
     public void stopLocationUpdates() {
         if (mProvider != null) {
             mProvider.stopLocationUpdates();
         }
-
-        mShouldStart = false;
     }
 
     /**
@@ -105,6 +201,7 @@ public class Locate {
      * @param permissions  Permissions returned from onRequestPermissionsResult
      * @param grantResults Granted permissions result returned from onRequestPermissionsResult
      */
+    @SuppressWarnings("unused") // Public API
     public void onRequestPermissionsResult(Activity activity, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PermissionValidator.REQUEST_LOCATION_PERMISSION) {
             boolean coarseLocationPermissionGranted = false;
@@ -138,6 +235,13 @@ public class Locate {
         }
     }
 
+    /**
+     * Returns last location update received from provider if one is available;
+     * returns null otherwise
+     *
+     * @return Last received {@link Location}
+     */
+    @SuppressWarnings("unused") // Public API
     public Location getLastLocation() {
         if (mProvider != null) {
             return mProvider.getLastLocation();
@@ -145,13 +249,27 @@ public class Locate {
         return null;
     }
 
+    /**
+     * Get location changed listener
+     *
+     * @return The {@link OnLocationChangedListener} set to Locate
+     */
+    @SuppressWarnings("unused") // Public API
     public OnLocationChangedListener getOnLocationChangedListener() {
         return mOnLocationChangedListener;
     }
 
+    /**
+     * Set location changed listener;
+     * Listens to provider location updates
+     *
+     * @param onLocationChangedListener {@link OnLocationChangedListener} to listen to location updates from providers
+     */
+    @SuppressWarnings("unused") // Public API
     public void setOnLocationChangedListener(OnLocationChangedListener onLocationChangedListener) {
         mOnLocationChangedListener = onLocationChangedListener;
     }
+
     // Package private methods
 
     Settings getSettings() {
@@ -264,7 +382,9 @@ public class Locate {
 
         if (mShouldStart) {
             mProvider.requestLocationUpdates(context, mSettings, mOnLocationChangedListener);
+            mShouldStart = false;
         } else if (mShouldStartService) {
+            mShouldStartService = false;
             mProvider.startService(context, mSettings, mServiceClass);
         }
     }
@@ -276,7 +396,9 @@ public class Locate {
 
         if (mShouldStart) {
             mProvider.requestLocationUpdates(context, mSettings, mOnLocationChangedListener);
+            mShouldStart = false;
         } else if (mShouldStartService) {
+            mShouldStartService = false;
             mProvider.startService(context, mSettings, mServiceClass);
         }
     }
