@@ -64,6 +64,13 @@ class FuseProvider extends Provider implements GoogleApiClient.ConnectionCallbac
     }
 
     @Override
+    void stopLocationUpdates() {
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    @Override
     public void onConnected(@Nullable Bundle bundle) {
         Logger.i("Connected to Google Api Client");
 

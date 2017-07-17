@@ -12,4 +12,5 @@ abstract class Provider {
     abstract void requestLocationUpdates(@NonNull Context context, @NonNull Settings settings, OnLocationChangedListener listener);
     abstract void startService(Context context, Settings settings, Class<? extends LocateService> serviceClass);
     abstract Location getLastLocation();
+    abstract void stopLocationUpdates();
 }

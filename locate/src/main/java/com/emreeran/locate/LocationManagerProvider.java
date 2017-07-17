@@ -14,7 +14,7 @@ import android.support.annotation.NonNull;
  * Created by Emre Eran on 30/05/2017.
  */
 
-class LocationManagerProvider extends Provider {
+class LocationManagerProvider extends Provider implements LocationListener {
 
     private LocationManager mLocationManager;
     private OnLocationChangedListener mOnLocationChangedListener;
@@ -51,7 +51,35 @@ class LocationManagerProvider extends Provider {
         return mLastLocation;
     }
 
-    // TODO: implement GPS only, revise
+    @Override
+    void stopLocationUpdates() {
+        mLocationManager.removeUpdates(this);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        if (mOnLocationChangedListener != null) {
+            mOnLocationChangedListener.onLocationChanged(location);
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Logger.i("Status of provider " + provider + " changed");
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Logger.i("Provider " + provider + " is enabled");
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Logger.i("Provider " + provider + " is disabled");
+    }
+
+    // TODO: implement GPS only mode, revise
     // Permissions are checked in PermissionValidator
     @SuppressWarnings("MissingPermission")
     private void startWithListener(Context context, Settings settings) {
@@ -62,30 +90,7 @@ class LocationManagerProvider extends Provider {
             float minDistance = settings.getSmallestDisplacement();
             long minTime = settings.getInterval();
 
-            mLocationManager.requestLocationUpdates(minTime, minDistance, criteria, new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    mLastLocation = location;
-                    if (mOnLocationChangedListener != null) {
-                        mOnLocationChangedListener.onLocationChanged(location);
-                    }
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                    Logger.i("Status of provider " + provider + " changed");
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                    Logger.i("Provider " + provider + " is enabled");
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                    Logger.i("Provider " + provider + " is disabled");
-                }
-            }, Looper.getMainLooper());
+            mLocationManager.requestLocationUpdates(minTime, minDistance, criteria, this, Looper.getMainLooper());
         } else {
             Logger.i("Permissions are missing.");
             // Permissions are missing somehow, fail with permissions missing.
