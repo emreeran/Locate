@@ -15,7 +15,7 @@ If using Gradle add jcenter or mavenCentral to repositories
 Add to your module dependencies:
 
         dependencies {
-            compile 'com.emreeran.locate:locate:0.0.3'
+            compile 'com.emreeran.locate:locate:0.0.4'
         }
         
 To add as a maven dependency:
@@ -70,8 +70,13 @@ Start getting updates with a callback
                 
             }
         });
+        
+You can keep updates in the background by calling `locate.requestLocationUpdates(this)` without a listener, this will keep updating last 
+location.
 
-Or to start as a service first create your service class
+
+
+To start as a service first create your service class
 
         public class MyService extends LocateService {
             @Override
@@ -88,6 +93,8 @@ Add your service to your manifest inside the application tag
 Start your service like this `locate.startService(this, MyService.class);`
 
 To get the last known location call `locate.getLastLocation()`
+
+To stop location updates use `Locate.stopLocationUpdates()` or if you are running as a service use `stopService(context, MyService.class)`
 
 License
 -------
