@@ -105,12 +105,13 @@ public class Locate {
     }
 
     /**
-     * Initialize Locate with an {@link Fragment} and {@link Settings}
+     * Initialize Locate with an {@link android.support.v4.app.Fragment} and {@link Settings}
      * If {@link Settings#mShouldAskPermissions} is not set to false requests permissions
      * with request code {@link PermissionValidator#REQUEST_LOCATION_PERMISSION}.
-     * To handle permission changes call {@link Locate#onRequestPermissionsResult} in {@link Fragment#onRequestPermissionsResult}
+     * To handle permission changes call {@link Locate#onRequestPermissionsResult} in
+     * {@link android.support.v4.app.Fragment#onRequestPermissionsResult}
      *
-     * @param fragment Current {@link Fragment}
+     * @param fragment Current {@link android.support.v4.app.Fragment}
      * @param settings Locate {@link Settings}
      */
     @SuppressWarnings("unused") // Public API
