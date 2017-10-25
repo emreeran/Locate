@@ -26,15 +26,12 @@ public class MainActivity extends Activity {
                         .smallestDisplacement(0)
                         .priority(Settings.Priority.HIGH)
                         .build());
-//        locate.requestLocationUpdates(this, new OnLocationChangedListener() {
-//            @Override
-//            public void onLocationChanged(Location location) {
-//                Log.d("MainActivity", "lat: " + location.getLatitude() + " long: " + location.getLongitude());
-//            }
-//        });
-
-//        locate.startService(this, SampleService.class);
-        stopService(new Intent(this, SampleService.class));
+        locate.requestLocationUpdates(this, new OnLocationChangedListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.d("MainActivity", "lat: " + location.getLatitude() + " long: " + location.getLongitude());
+            }
+        });
     }
 
     @Override

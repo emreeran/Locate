@@ -27,11 +27,7 @@ public abstract class LocateService extends Service
     @Override
     public abstract void onLocationChanged(Location location);
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -103,6 +99,8 @@ public abstract class LocateService extends Service
             );
         }
     }
+
+
 
     // Permissions are checked in PermissionValidator
     @SuppressWarnings("MissingPermission")
